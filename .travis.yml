@@ -2,6 +2,6 @@ sudo: false
 language: c
 script:
   # Fail if any of these files have warnings
-  - shellcheck etc/jlenv.d/exec/*
-  - shellcheck libexec/*
-  - test/run
+  #- shellcheck etc/jlenv.d/exec/*
+  #- shellcheck libexec/*
+  #- test/run

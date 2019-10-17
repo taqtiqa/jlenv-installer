@@ -1,4 +1,6 @@
 #!/bin/bash
+# shellcheck disable=SC2034
+#
 set -e
 
 homebrew=
@@ -6,13 +8,14 @@ type -p brew >/dev/null && homebrew=1
 
 try_bash_extension() {
   if [ -x src/configure ]; then
-    src/configure && make -C src || {
+    src/configure 
+    make -C src || {
       echo "Optional bash extension failed to build, but things will still work normally."
     }
   fi
 }
 
-if ! type -p git >/dev/null; then
+if ! command -v git > /dev/null 2>&1; then
   git() {
     echo "Error: git is required to proceed. Please install git and try again." >&2
     exit 1

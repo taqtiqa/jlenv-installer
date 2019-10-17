@@ -1,5 +1,8 @@
 #!/bin/bash
+# shellcheck disable=SC2034
+#
 # Usage: jlenv doctor
+#
 # Summary: Detects common problems in jlenv installation
 
 set -e
@@ -20,7 +23,7 @@ printc() {
     fmt="${!color_name}${fmt}${color_reset}"
   fi
 
-  printf "$fmt" "$@"
+  printf "%s %s" "$fmt" "$@"
 }
 
 if [ -t 1 ]; then
@@ -39,15 +42,15 @@ fi
 
 warnings=0
 
-if [ $(uname -s) = "Darwin" ]; then
+if [ "$(uname -s)" = "Darwin" ]; then
   bashrc=".bash_profile"
 else
   bashrc=".bashrc"
 fi
 
-echo -n "Checking for \`jlenv' in PATH: "
+echo -n "Checking for \`jlenv\` in PATH: "
 num_locations="$(which -a jlenv | uniq | wc -l)"
-if [ $num_locations -eq 0 ]; then
+if [ "$num_locations" -eq 0 ]; then
   printc red "not found\n"
   { if [ -x ~/.jlenv/bin/jlenv ]; then
       echo "You seem to have jlenv installed in \`$HOME/.jlenv/bin', but that"
@@ -58,7 +61,7 @@ if [ $num_locations -eq 0 ]; then
     fi
   } | indent
   exit 1
-elif [ $num_locations -eq 1 ]; then
+elif [ "$num_locations" -eq 1 ]; then
   printc green "%s\n" "$(which jlenv)"
 else
   printc yellow "multiple\n"
@@ -105,7 +108,7 @@ if [ -z "$jlenv_installs" ]; then
   }
   echo
   : $((warnings++))
-elif [ $num_installs -eq 1 ]; then
+elif [ "$num_installs" -eq 1 ]; then
   printc green "$jlenv_installs"
   if [[ $jlenv_installs == "$JLENV_ROOT"/plugins/* ]]; then
     jlenv_install_cmd="${jlenv_installs##*/}"
@@ -126,22 +129,22 @@ else
 fi
 
 echo -n "Counting installed Julia versions: "
-num_julies="$(jlenv versions --bare | wc -l)"
-if [ $num_julies -eq 0 ]; then
+num_julies="$(jlenv-versions --bare | wc -l)"
+if [ "$num_julies" -eq 0 ]; then
   printc yellow "none\n"
   echo "There aren't any Julia versions installed under \`$JLENV_ROOT/versions'." | indent
-  [ $num_installs -eq 0 ] || {
+  [ "$num_installs" -eq 0 ] || {
     echo -n "You can install Julia versions like so: "
     printc bright "jlenv install 1.0.3\n"
   } | indent
 else
-  printc green "%d versions\n" $num_julies
+  printc green "%d versions\n" "$num_julies"
 fi
 
 echo -n "Auditing installed plugins: "
 OLDIFS="$IFS"
 IFS=$'\n'
-hooks=(`jlenv hooks exec`)
+hooks=$(jlenv hooks exec)
 IFS="$OLDIFS"
 plugin_broken=0
 for hook in "${hooks[@]}"; do
