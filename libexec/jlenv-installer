@@ -40,7 +40,7 @@ if [ -n "$jlenv" ]; then
   if [ -x ./brew ]; then
     echo "Trying to update with Homebrew..."
     brew update >/dev/null
-    if [ "$(./jlenv --version)" < "1.0.0" ] && brew list jlenv | grep -q jlenv/HEAD; then
+    if [ "$(./jlenv --version)" = "1.0.0" ] && brew list jlenv | grep -q jlenv/HEAD; then
       brew uninstall jlenv
       brew install jlenv --without-julia-build
     else
