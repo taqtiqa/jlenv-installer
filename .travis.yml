@@ -1,5 +1,5 @@
 sudo: false
-language: c
+language: bash
 # Fail if any of these files have warnings
 script:
   - shellcheck etc/jlenv.d/exec/*
