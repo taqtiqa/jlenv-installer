@@ -3,6 +3,7 @@
 #
 set -e
 
+tag_name='1.0.0'
 homebrew=
 type -p brew >/dev/null && homebrew=1
 
@@ -41,38 +42,44 @@ if [ -n "$jlenv" ]; then
   cd "${jlenv%/*}"
 
   if [ -x ./brew ]; then
-    echo "Trying to update with Homebrew..."
-    brew update >/dev/null
-    if [ "$(./jlenv --version)" = "1.0.0" ] && brew list jlenv | grep -q jlenv/HEAD; then
-      brew uninstall jlenv
-      brew install jlenv --without-julia-build
-    else
-      brew upgrade jlenv
-    fi
+    echo "Trying to update with Homebrew not yet ported. Contributors needed..."
+    # brew update >/dev/null
+    # if [ "$(./jlenv --version)" = "${tag_name}" ] && brew list jlenv | grep -q jlenv/HEAD; then
+    #   brew uninstall jlenv
+    #   brew install jlenv --without-julia-build
+    # else
+    #   brew upgrade jlenv
+    # fi
   elif git remote -v 2>/dev/null | grep -q jlenv; then
     echo "Trying to update with git..."
     git pull --tags origin master
+    git checkout $(git tag | sort -V | tail -1)
     cd ..
     try_bash_extension
   fi
 else
   if [ -n "$homebrew" ]; then
-    echo "Installing jlenv with Homebrew..."
-    brew update
-    brew install jlenv --without-julia-build
-    jlenv="$(brew --prefix)/bin/jlenv"
+    echo "Installing jlenv with Homebrew not yet ported. Contributors needed..."
+    # brew update
+    # brew install jlenv --without-julia-build
+    # jlenv="$(brew --prefix)/bin/jlenv"
   else
-    echo "Installing jlenv with git..."
+    echo "Installing jlenv version ${tag_name} with git..."
     mkdir -p ~/.jlenv
     cd ~/.jlenv
     git init
     git remote add -f -t master origin https://github.com/jlenv/jlenv.git
-    git checkout -b master origin/master
+    git fetch --tags --force
+    git checkout tags/${tag_name}
     try_bash_extension
     jlenv=~/.jlenv/bin/jlenv
-
-    if [ ! -e versions ] && [ -w /opt/julies ]; then
-      ln -s /opt/julies versions
+    
+    # We don't yet have a chjulia - but will, for those use cases.
+    # jlenv and chjulia two should adopt the same default location where multiple
+    # Julias are iunstalled.
+    # Current intention is to adopt chjulia conventions.
+    if [ ! -e versions ] && [ -w /opt/julias ]; then
+      ln -s /opt/julias versions
     fi
   fi
 fi
@@ -86,22 +93,23 @@ if [ -n "$julia_build" ]; then
   cd "${julia_build%/*}"
 
   if [ -x ./brew ]; then
-    echo "Trying to update with Homebrew..."
-    brew update >/dev/null
-    brew upgrade julia-build
+    echo "Trying to update with Homebrew not yet ported. Contributors needed..."
+    # brew update >/dev/null
+    # brew upgrade julia-build
   elif git remote -v 2>/dev/null | grep -q julia-build; then
     echo "Trying to update with git..."
-    git pull origin master
+    git fetch --tags --force
+    git checkout $(git tag | sort -V | tail -1)
   fi
 else
   if [ -n "$homebrew" ]; then
-    echo "Installing julia-build with Homebrew..."
-    brew update
-    brew install julia-build
+    echo "Installing julia-build with Homebrew not yet ported. Contributors needed..."
+    # brew update
+    # brew install julia-build
   else
-    echo "Installing julia-build with git..."
-    mkdir -p "${jlenv_root}/plugins"
-    git clone https://github.com/jlenv/julia-build.git "${jlenv_root}/plugins/julia-build"
+    echo "Installing julia-install with git not yet inplemented..."
+    # mkdir -p "${jlenv_root}/plugins"
+    # git clone https://github.com/jlenv/julia-install.git "${jlenv_root}/plugins/julia-install"
   fi
 fi
 
@@ -110,7 +118,7 @@ mkdir -p "${jlenv_root}/cache"
 
 echo
 echo "Running doctor script to verify installation..."
-http https://github.com/jlenv/jlenv-installer/raw/master/bin/jlenv-doctor | "$BASH"
+http https://raw.githubusercontent.com/jlenv/jlenv-installer/master/libexec/jlenv-doctor | "$BASH"
 
 echo
 echo "All done!"
