@@ -71,7 +71,6 @@ else
     git remote add -f -t master origin https://github.com/jlenv/jlenv.git
     git fetch --tags --force
     git checkout tags/${tag_name}
-    try_bash_extension
     jlenv=~/.jlenv/bin/jlenv
     
     # We don't yet have a chjulia - but will, for those use cases.
