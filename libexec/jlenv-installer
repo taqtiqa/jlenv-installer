@@ -55,7 +55,6 @@ if [ -n "$jlenv" ]; then
     git pull --tags origin master
     git checkout $(git tag | sort -V | tail -1)
     cd ..
-    try_bash_extension
   fi
 else
   if [ -n "$homebrew" ]; then
@@ -72,10 +71,9 @@ else
     git fetch --tags --force
     git checkout tags/${tag_name}
     jlenv=~/.jlenv/bin/jlenv
-    
     # We don't yet have a chjulia - but will, for those use cases.
-    # jlenv and chjulia two should adopt the same default location where multiple
-    # Julias are iunstalled.
+    # jlenv and chjulia should adopt the same default location where multiple
+    # Julias are installed.
     # Current intention is to adopt chjulia conventions.
     if [ ! -e versions ] && [ -w /opt/julias ]; then
       ln -s /opt/julias versions
@@ -124,8 +122,8 @@ echo "All done!"
 echo "Note that this installer doesn't yet configure your shell startup files:"
 i=0
 if [ -x ~/.jlenv/bin ]; then
-  echo "$((++i)). You'll want to ensure that \`~/.jlenv/bin' is added to PATH."
+  echo "$((++i)). You'll want to ensure that \$(~/.jlenv/bin) and \$(~/.jlenv/libexec) is added to PATH."
 fi
-echo "$((++i)). Run \`jlenv init' to see instructions how to configure jlenv for your shell."
+echo "$((++i)). Run \$(jlenv init) to see instructions how to configure jlenv for your shell."
 echo "$((++i)). Launch a new terminal window to verify that the configuration is correct."
 echo
