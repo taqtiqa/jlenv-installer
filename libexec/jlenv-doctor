@@ -49,7 +49,7 @@ else
 fi
 
 echo -n "Checking for \`jlenv\` in PATH: "
-num_locations="$(which -a jlenv | uniq | wc -l)"
+num_locations="$(type -a jlenv | uniq | wc -l)"
 if [ "$num_locations" -eq 0 ]; then
   printc red "not found\n"
   { if [ -x ~/.jlenv/bin/jlenv ]; then
@@ -62,13 +62,13 @@ if [ "$num_locations" -eq 0 ]; then
   } | indent
   exit 1
 elif [ "$num_locations" -eq 1 ]; then
-  printc green "%s\n" "$(which jlenv)"
+  printc green "%s\n" "$(command -v jlenv)"
 else
   printc yellow "multiple\n"
   { echo "You seem to have multiple jlenv installs in the following locations."
     echo "Please pick just one installation and remove the others."
     echo
-    which -a jlenv
+    type -a jlenv
   } | indent
   echo
   : $((warnings++))
@@ -98,7 +98,7 @@ fi
 
 echo -n "Checking \`jlenv install' support: "
 jlenv_installs="$({ ls "$JLENV_ROOT"/plugins/*/bin/jlenv-install 2>/dev/null || true
-                    which -a jlenv-install 2>/dev/null || true
+                    type -a jlenv-install 2>/dev/null || true
                   } | uniq)"
 num_installs="$(wc -l <<<"$jlenv_installs")"
 if [ -z "$jlenv_installs" ]; then
