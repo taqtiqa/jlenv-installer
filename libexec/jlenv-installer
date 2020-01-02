@@ -1,0 +1,129 @@
+#!/bin/bash
+# shellcheck disable=SC2034
+#
+set -e
+
+tag_name='1.0.1'
+homebrew=
+type -p brew >/dev/null && homebrew=1
+
+try_bash_extension() {
+  if [ -x src/configure ]; then
+    src/configure 
+    make -C src || {
+      echo "Optional bash extension failed to build, but things will still work normally."
+    }
+  fi
+}
+
+if ! command -v git > /dev/null 2>&1; then
+  git() {
+    echo "Error: git is required to proceed. Please install git and try again." >&2
+    exit 1
+  }
+fi
+
+http() {
+  local url="$1"
+  if type -p curl >/dev/null; then
+    curl -fsSL "$url"
+  elif type -p wget >/dev/null; then
+    wget -q "$url" -O-
+  else
+    echo "Error: couldn't download file. No \`curl' or \`wget' found." >&2
+    return 1
+  fi
+}
+
+jlenv="$(command -v jlenv ~/.jlenv/bin/jlenv | head -1)"
+
+if [ -n "$jlenv" ]; then
+  echo "jlenv already seems installed in \`$jlenv'."
+  cd "${jlenv%/*}"
+
+  if [ -x ./brew ]; then
+    echo "Trying to update with Homebrew not yet ported. Contributors needed..."
+    # brew update >/dev/null
+    # if [ "$(./jlenv --version)" = "${tag_name}" ] && brew list jlenv | grep -q jlenv/HEAD; then
+    #   brew uninstall jlenv
+    #   brew install jlenv --without-julia-build
+    # else
+    #   brew upgrade jlenv
+    # fi
+  elif git remote -v 2>/dev/null | grep -q jlenv; then
+    echo "Trying to update with git..."
+    git pull --tags origin master
+    git checkout $(git tag | sort -V | tail -1)
+    cd ..
+  fi
+else
+  if [ -n "$homebrew" ]; then
+    echo "Installing jlenv with Homebrew not yet ported. Contributors needed..."
+    # brew update
+    # brew install jlenv --without-julia-build
+    # jlenv="$(brew --prefix)/bin/jlenv"
+  else
+    echo "Installing jlenv version ${tag_name} with git..."
+    mkdir -p ~/.jlenv
+    cd ~/.jlenv
+    git init
+    git remote add -f -t master origin https://github.com/jlenv/jlenv.git
+    git fetch --tags --force
+    git checkout tags/${tag_name}
+    jlenv=~/.jlenv/bin/jlenv
+    # We don't yet have a chjulia - but will, for those use cases.
+    # jlenv and chjulia should adopt the same default location where multiple
+    # Julias are installed.
+    # Current intention is to adopt chjulia conventions.
+    if [ ! -e versions ] && [ -w /opt/julias ]; then
+      ln -s /opt/julias versions
+    fi
+  fi
+fi
+
+jlenv_root="$("$jlenv" root)"
+julia_build="$(command -v "$jlenv_root"/plugins/*/bin/jlenv-install jlenv-install | head -1)"
+
+echo
+if [ -n "$julia_build" ]; then
+  echo "\`jlenv install' command already available in \`$julia_build'."
+  cd "${julia_build%/*}"
+
+  if [ -x ./brew ]; then
+    echo "Trying to update with Homebrew not yet ported. Contributors needed..."
+    # brew update >/dev/null
+    # brew upgrade julia-build
+  elif git remote -v 2>/dev/null | grep -q julia-build; then
+    echo "Trying to update with git..."
+    git fetch --tags --force
+    git checkout $(git tag | sort -V | tail -1)
+  fi
+else
+  if [ -n "$homebrew" ]; then
+    echo "Installing julia-build with Homebrew not yet ported. Contributors needed..."
+    # brew update
+    # brew install julia-build
+  else
+    echo "Installing julia-install with git not yet inplemented..."
+    # mkdir -p "${jlenv_root}/plugins"
+    # git clone https://github.com/jlenv/julia-install.git "${jlenv_root}/plugins/julia-install"
+  fi
+fi
+
+# Enable caching of jlenv-install downloads
+mkdir -p "${jlenv_root}/cache"
+
+echo
+echo "Running doctor script to verify installation..."
+http https://raw.githubusercontent.com/jlenv/jlenv-installer/master/libexec/jlenv-doctor | "$BASH"
+
+echo
+echo "All done!"
+echo "Note that this installer doesn't yet configure your shell startup files:"
+i=0
+if [ -x ~/.jlenv/bin ]; then
+  echo "$((++i)). You'll want to ensure that \$(~/.jlenv/bin) and \$(~/.jlenv/libexec) is added to PATH."
+fi
+echo "$((++i)). Run \$(jlenv init) to see instructions how to configure jlenv for your shell."
+echo "$((++i)). Launch a new terminal window to verify that the configuration is correct."
+echo

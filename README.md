@@ -1,5 +1,7 @@
 # jlenv installer & doctor scripts
 
+[![Build Status](https://travis-ci.com/jlenv/jlenv-installer.svg?branch=master)](https://travis-ci.com/jlenv/jlenv-installer) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/dac67ef51fa34b25babb098b05145f72)](https://www.codacy.com/manual/taqtiqa-mark/jlenv-jlenv-installer?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jlenv/jlenv-installer&amp;utm_campaign=Badge_Grade) [![CodeFactor](https://www.codefactor.io/repository/github/jlenv/jlenv-installer/badge)](https://www.codefactor.io/repository/github/jlenv/jlenv-installer)
+
 ## jlenv-installer
 
 The `jlenv-installer` script idempotently installs or updates jlenv on your
@@ -11,10 +13,10 @@ installed if `jlenv install` is not already available.
 
 ```sh
 # with curl
-curl -fsSL https://github.com/jlenv/jlenv-installer/raw/master/bin/jlenv-installer | bash
+curl -fsSL https://raw.githubusercontent.com/jlenv/jlenv-installer/master/libexec/jlenv-installer | bash
 
 # alternatively, with wget
-wget -q https://github.com/jlenv/jlenv-installer/raw/master/bin/jlenv-installer -O- | bash
+wget -q https://raw.githubusercontent.com/jlenv/jlenv-installer/master/libexec/jlenv-installer -O- | bash
 ```
 
 ## jlenv-doctor
@@ -25,8 +27,8 @@ success of the installation and to detect common issues. You can run
 
 ```sh
 # with curl
-curl -fsSL https://github.com/jlenv/jlenv-installer/raw/master/bin/jlenv-doctor | bash
+curl -fsSL https://raw.githubusercontent.com/jlenv/jlenv-installer/master/libexec/jlenv-doctor | bash
 
 # alternatively, with wget
-wget -q https://github.com/jlenv/jlenv-installer/raw/master/bin/jlenv-doctor -O- | bash
+wget -q https://raw.githubusercontent.com/jlenv/jlenv-installer/master/libexec/jlenv-doctor -O- | bash
 ```

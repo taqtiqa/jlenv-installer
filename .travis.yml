@@ -1,0 +1,5 @@
+sudo: false
+language: bash
+# Fail if any of these files have warnings
+script:
+  - shellcheck libexec/*
